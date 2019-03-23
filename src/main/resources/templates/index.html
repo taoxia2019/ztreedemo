@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="/css/zTreeStyle/zTreeStyle.css" type="text/css">
+    <script type="text/javascript" src="/js/jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.ztree.core.js"></script>
+    <script type="text/javascript" src="/js/jquery.ztree.excheck.js"></script>
+    <script type="text/javascript" src="/js/jquery.ztree.exhide.js"></script>
+    <script type="text/javascript" src="js/jquery.ztree.exedit.js"></script>
+</head>
+<body>
+<div th:text="测试 "> </div>
+<div class="content_wrap">
+    <div class="left">
+        <ul id="tree" class="ztree" style="width:260px; overflow:auto;"></ul>
+    </div>
+    <div class="right">
+
+       <!-- <input type="button" value="获得tree的id集合" id="ztreeids"/>
+-->
+        <button type="button"  id="ztreeids" onclick="treeIds()">获得tree的id集合</button>
+        <button id="btn" onclick="test()">click</button>
+    </div>
+
+</div>
+
+
+</body>
+
+<script>
+
+    $(document).ready(function () {
+        var setting = {
+            async: {
+                enable: true,
+                url: "/gettree",
+                autoParam: ["id"]
+            },
+            isSimpleData : true,              //数据是否采用简单 Array 格式，默认false
+            treeNodeKey : "id",               //在isSimpleData格式下，当前节点id属性
+            treeNodeParentKey : "pId",        //在isSimpleData格式下，当前节点的父节点id属性
+            showLine : true,                  //是否显示节点间的连线
+            check: {
+                enable: true,
+                chkStyle: "checkbox"//显示 checkbox 选择框，默认checkbox可选择值radio
+            }
+
+        };
+        var t = $("#tree");
+        t = $.fn.zTree.init(t, setting);
+    });
+
+    function filter(node) {   //过滤器直选中2级节点累加
+        return ((node.level == 2||node.level == 3) && node.checked == true);
+    }
+
+    function treeIds(){
+        //alert("000000000000000");//这是将选中的节点的id用;分割拼接起来,用于持久化到数据库
+        var zTreeO =  $.fn.zTree.getZTreeObj("tree").getNodesByFilter(filter);
+        var idListStr = "";
+        for (var i = 0; i < zTreeO.length; i++) {
+            if (zTreeO[i].id != null) {
+                idListStr+= (i == (zTreeO.length-1))?zTreeO[i].id:zTreeO[i].id+";";
+            }
+        };
+        $("#ztreeids").val(idListStr);
+        alert(idListStr);
+    };
+
+    function test(){
+        alert("hello world");
+    }
+
+</script>
+</html>
